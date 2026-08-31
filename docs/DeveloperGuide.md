@@ -21,7 +21,7 @@ flowchart LR
 
 The immutable `Memory` model represents one journal memory. It generates or accepts a stable UUID, validates mandatory values, normalizes text, exposes optional description and location values, and returns immutable tag and people sets. UUID defines identity and therefore equality and hash-code behavior. Duplicate tags and people are coalesced after normalization while preserving first-occurrence order.
 
-The JavaFX editor and details panel use this model through the application layer; serialization concerns remain outside it. Constella uses composition rather than artificial memory subclasses: mood, tags, people, location, and constellation membership are independent values that can coexist on any memory. This retains one coherent identity type while `JournalStorage` and `JournalSession` provide interface-based polymorphism at application boundaries. The MP1 specification does not require a three-type domain hierarchy.
+The JavaFX editor and details panel use this model through the application layer; serialization concerns remain outside it. Constella uses composition rather than artificial memory subclasses: mood, tags, people, location, and constellation membership are independent values that can coexist on any memory. This retains one coherent identity type. `JournalStorage` supplies the polymorphic persistence seam, `JsonJournalStorage` implements it, and `JournalSession` coordinates storage with application use cases. The MP1 specification requires iP-level complexity but does not require a three-type domain hierarchy.
 
 ### Journal service
 
@@ -29,7 +29,7 @@ The JavaFX editor and details panel use this model through the application layer
 
 Search is case-insensitive across title, description, tags, people, and location. Search and populated mood, tag, constellation, and year filters combine using AND semantics. Results are ordered newest first. `JournalSnapshot` is the immutable aggregate boundary passed to and from the implemented storage layer.
 
-Star positions are normalized `StarPosition` values deterministically derived from each memory UUID, keeping visual coordinates out of JavaFX and stable across launches. A moved position is updated through `JournalSession` and persisted once on drag release. Files predating saved positions load with the same deterministic UUID fallback, without a format migration.
+`StarPosition` remains in snapshots and JSON for backward compatibility with the former 2D renderer. Missing saved positions receive the same deterministic UUID fallback, so older files remain readable without a format migration. The current force-directed 3D renderer calculates transient `Vector3` coordinates and neither reads nor writes those legacy 2D positions. My Sky does not provide manual node positioning.
 
 ### First-run seeding
 
@@ -51,15 +51,15 @@ The constellation screen creates, renames, and deletes constellations and toggle
 
 ### JavaFX 3D My Sky
 
-`Space3DView` is the My Sky startup renderer. It uses a depth-buffered `SubScene`, `PerspectiveCamera`, mood-coloured memory `Sphere` nodes, hairline memory-edge `Cylinder` geometry, `PhongMaterial`, and restrained ambient/key lighting. Constellations receive a deterministic palette; an edge uses its contributing constellation's colour, or a deterministic average when overlapping constellations contribute the same edge. A normal transparent Pane carries screen-facing labels and fallback guidance so text is not placed in perspective space. Sphere events are consumed separately from background camera events, preventing selection from starting rotation. Connection visibility affects rendering only; auto-rotation defaults on, remains user-toggleable, and explicit +/- zoom reuses the bounded `CameraState`. Pitch, zoom, and pan are clamped, while yaw normalizes across ±180° so continuous rotation cannot become stuck at a boundary. Camera movement is never persisted.
+`Space3DView` is the My Sky startup renderer. It uses a depth-buffered `SubScene`, `PerspectiveCamera`, mood-coloured memory `Sphere` nodes, hairline memory-edge `Cylinder` geometry, `PhongMaterial`, and restrained ambient/key lighting. Constellations receive a deterministic palette; an edge uses its contributing constellation's colour, or a deterministic average when overlapping constellations contribute the same edge. A normal transparent `Pane` carries screen-facing labels and fallback guidance so text is not placed in perspective space. Sphere events are consumed separately from background camera events, preventing selection from starting rotation. Connection visibility affects rendering only; auto-rotation defaults on, remains user-toggleable, and explicit +/- zoom reuses the bounded `CameraState`. Pitch, zoom, and pan are clamped, while yaw normalizes across ±180° so continuous rotation cannot become stuck at a boundary. Camera movement is never persisted.
 
-The space ambience uses 96 deterministic low-division background spheres and one small travelling light per real graph edge. A single `AnimationTimer`, throttled to approximately 30 updates per second, changes only opacity, scale, and traveller translation; it never rebuilds geometry or advances the force solver. `SpaceMotion` owns the UI-independent deterministic phase, bounded pulse, edge progress, and interpolation calculations. `GraphFocusVisibility` is the single UI-independent predicate used by static cylinders, travellers, and connection-toggle restoration: no focus shows all edges, constellation focus shows only edges carrying that constellation ID, and memory focus takes precedence to show only incident edges. Auto-rotation updates transforms directly and projects a focused 2D label at approximately 15 Hz; it does not enqueue a `Platform.runLater` operation per frame. The Motion control and view navigation explicitly stop the timer; the existing finite settle `Timeline` is stopped before each rebuild.
+The space ambience uses 96 deterministic low-division background spheres and one small travelling light per real graph edge. A single `AnimationTimer`, throttled to approximately 30 updates per second, changes only opacity, scale, and traveller translation; it never rebuilds geometry or advances the force solver. `SpaceMotion` owns the UI-independent deterministic phase, bounded pulse, edge progress, and interpolation calculations. `GraphFocusVisibility` is the single UI-independent predicate used by static cylinders, travellers, and connection-toggle restoration: no focus shows all edges, constellation focus shows only edges carrying that constellation ID, and memory focus takes precedence to show only incident edges. Auto-rotation updates transforms directly and projects a focused 2D label at approximately 15 Hz; it does not enqueue a `Platform.runLater` operation per frame. The Motion control and view navigation explicitly stop the animation timer; the finite JavaFX settle transition is stopped before each rebuild.
 
 The 3D focus selector uses transient UI options rather than synthetic domain constellations. Its first option represents all memories; the remaining options wrap real constellations. Changing constellation focus clears hover and memory selection before applying constellation highlighting, preventing stale selection precedence from masking the requested focus.
 
 `TimelineView` renders the already-filtered, newest-first memories as compact alternating cards around a central axis with year markers. Rows and cards have bounded heights so a short result set cannot stretch entries to fill the viewport. It is a JavaFX projection only and does not introduce timeline state into the domain or persistence schema.
 
-The renderer depends on five UI-independent responsibilities:
+The renderer depends on six UI-independent responsibilities:
 
 - `MemoryGraphBuilder` is the sole graph-construction authority: visible constellation members are ordered by date then UUID, consecutive memories form sparse paths, and overlapping endpoint pairs are deduplicated while retaining contributing constellation IDs.
 - `MemoryGraphRenderPlan` exposes exactly one render node per visible graph memory and exactly the builder's edges, rejecting invalid endpoints. No metadata projection exists.
@@ -82,18 +82,36 @@ Gradle's Checkstyle integration runs on both production and JUnit sources as par
 
 Java assertions are limited to internal, non-recoverable algorithm invariants. Graph construction asserts that retained edges have endpoints in the graph, and the force layout asserts that settled coordinates are finite and within its published bounds. User input, data-file failures, and runtime capability failures remain validated with exceptions or user-facing error handling because assertions can be disabled.
 
+## Software engineering process
+
+Constella was developed in numbered, testable increments rather than as one generated code dump. Each increment recorded its original prompt, assumptions, changed files, actual commands, verification results, limitations, and a student-review checklist under `logs/`. The sequence progressed through project scaffolding, domain modelling, application services, persistence, JavaFX CRUD, visualization, search and timeline, release preparation, demo data, 3D interaction, and final hardening.
+
+The working process for each increment was:
+
+1. Inspect the current implementation and state assumptions.
+2. Propose and implement one coherent change.
+3. Add UI-independent tests for domain, application, persistence, geometry, or state logic.
+4. Run focused tests followed by the complete verification suite.
+5. Manually inspect JavaFX behavior that could not be tested without a graphical environment.
+6. Update user and developer documentation to match the verified release.
+7. Record failures and corrections in the corresponding interaction log.
+
+The `master` branch is the submission branch. GitHub Actions uses a Linux/Windows/macOS matrix on pushes, pull requests, and manual runs. Every Java 25 job validates the Gradle Wrapper, runs `./gradlew clean check releaseJar --no-daemon`, and uploads its platform-specific JAR as a seven-day workflow artifact. The workflow has read-only repository permissions and does not deploy or create a GitHub Release. Checkstyle and JUnit form the automated quality gate; the matrix verifies platform compilation and UI-independent behavior, while the User Guide retains the manual GUI checks that headless hosted runners cannot perform.
+
 ## Build and test
 
 - macOS/Linux: `./gradlew clean build`
 - Windows: `gradlew.bat clean build`
 - Tests only: `./gradlew test` or `gradlew.bat test`
+- Full verification: `./gradlew clean check` or `gradlew.bat clean check`
+- Platform release: `./gradlew releaseJar` or `gradlew.bat releaseJar`
 - Run: `./gradlew run` or `gradlew.bat run`
 
 The Gradle Wrapper downloads the pinned Gradle version. The build requests a Java 25 toolchain and can provision one through the Foojay resolver when it is not installed locally.
 
 ## Testing approach
 
-Tests exercise domain validation, service CRUD and cleanup, combined search/filter semantics, deterministic positioning/connections, viewport and 3D camera bounds, 3D vector/connection geometry, exact memory-only render-plan invariants, sparse/deduplicated overlapping edges, deterministic bounded memory force layout, collision/depth/component behavior, movement saves, backward-compatible coordinate loading, application-session saves, cross-platform paths, and JSON failures/round trips without starting JavaFX or touching real user data. Persistence tests use JUnit temporary directories. A 100-memory graph/layout case guards performance and boundedness. UI presentation and full pointer/keyboard flows use the User Guide checklist.
+Tests exercise domain validation, service CRUD and cleanup, combined search/filter semantics, constellation search, deterministic graph connections, 3D camera bounds, vector/connection geometry, exact memory-only render-plan invariants, sparse/deduplicated overlapping edges, deterministic bounded force layout, collision/depth/component behavior, backward-compatible coordinate loading, application-session saves, cross-platform paths, and JSON failures/round trips without starting JavaFX or touching real user data. Persistence tests use JUnit temporary directories. A 100-memory graph/layout case guards performance and boundedness. UI presentation and full pointer/keyboard flows use the User Guide checklist.
 
 ## Error handling
 
@@ -101,11 +119,11 @@ Domain boundaries throw specific validation errors with field-oriented messages.
 
 ## Build and packaging
 
-The application runs through the Gradle Wrapper and Java 25 toolchain. `releaseJar` expands the runtime classpath into a single platform-labelled JAR and uses the plain `constella.Launcher` entry point. This bundles JavaFX native libraries for the build machine only. The verified artifact is `Constella-macos-arm64.jar`; Windows and Linux artifacts must be built and tested on those systems. The fat JAR currently emits JavaFX's warning about classes loaded from the unnamed module but launched successfully on macOS ARM64.
+The application runs through the Gradle Wrapper and Java 25 toolchain. `releaseJar` expands the runtime classpath into a single platform-labelled JAR and uses the plain `constella.Launcher` entry point. This bundles JavaFX native libraries for the build machine only. The locally verified artifact is `Constella-macos-arm64.jar`; CI separately builds Linux, Windows, and macOS artifacts from the same commit. `clean` deliberately removes generated release artifacts, so final release verification runs `clean check releaseJar` in that order. The fat JAR currently emits JavaFX's warning about classes loaded from the unnamed module but launched successfully on macOS ARM64. CI success proves compilation and automated behavior on its runner, not interactive rendering on an end-user desktop.
 
 ## Known limitations
 
-- Windows and Linux have not been run or visually verified.
+- Windows and Linux GUI behavior has not been manually or visually verified; their CI jobs provide build, Checkstyle, and UI-independent test coverage only.
 - The bounded force layout uses collision separation, but dense graphs can still have visually close nodes; it is a finite settled calculation, not a permanently running simulation.
 - Connection lines form a stable path, not a custom graph editable by the user.
 - The 3D force layout is settled rather than continuously adaptive; labels are capped to limit overlap, and camera state is intentionally transient.
@@ -113,7 +131,9 @@ The application runs through the Gradle Wrapper and Java 25 toolchain. `releaseJ
 
 ## Acknowledgements
 
-- Gradle, JavaFX, and JUnit documentation informed the project setup.
-- JavaFX `SubScene`, camera, shape, material, and lighting API concepts informed the 3D renderer; no external 3D code or assets were reused.
+- OpenAI Codex assisted with requirements analysis, design alternatives, implementation, tests, debugging, documentation, and interaction summaries. The prompts, outcomes, mistakes, and verification are recorded under `logs/`; generated work was reviewed and tested rather than accepted solely on model output.
+- Obsidian's graph-view concept inspired the idea of exploring connected journal entries spatially. No Obsidian code, branding, icons, screenshots, or other assets are included.
+- Gradle, JavaFX, JUnit, and Checkstyle documentation informed the build, UI, testing, and coding-standard setup.
+- JavaFX `SubScene`, camera, shape, material, lighting, and animation API concepts informed the 3D renderer; no external 3D code or assets were reused.
 - Gson 2.14.0 provides JSON parsing and generation under the Apache 2.0 license.
-- No reused application code, external fonts, or visual assets are included.
+- The fictional NUS demo journal was written for this project. No personal journal data, external fonts, or visual assets are included.
