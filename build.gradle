@@ -71,6 +71,10 @@ tasks.register('releaseJar', Jar) {
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
 }
 
+tasks.named('clean') {
+    delete layout.projectDirectory.file('release/Constella.jar')
+}
+
 dependencies {
     implementation 'com.google.code.gson:gson:2.14.0'
     [universalJavafxLinux: 'linux',
