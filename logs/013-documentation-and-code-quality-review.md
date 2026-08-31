@@ -16,6 +16,10 @@ Bring the README, User Guide, and Developer Guide into precise alignment with th
 
 > push it please. Also, i will need a way to test or build the jar for linux, windows using github actions, can that be done?
 
+## Second follow-up prompt
+
+> also remove that limitation from the docs
+
 ## Response summary
 
 The documentation was audited against `MP1-spec.md`, `AGENTS.md`, the current Java source, Gradle configuration, Checkstyle rules, CI workflow, tests, release process, and repository state. The three requested documents were updated without adding product functionality.
@@ -63,6 +67,7 @@ The documentation was audited against `MP1-spec.md`, `AGENTS.md`, the current Ja
 - `unzip -t` reported no compressed-data errors.
 - The updated workflow was prepared for remote validation with Linux, Windows, and macOS jobs; final job results were intentionally not claimed before the push.
 - The first matrix run completed successfully on Linux, Windows, and macOS and uploaded all three artifacts. GitHub reported Node.js/action deprecation annotations for the earlier v4 action majors, so the workflow was updated to the current checkout v7, Gradle Actions v6, setup-java v6, and upload-artifact v7 major releases for a follow-up run.
+- After the current-action follow-up run also passed on all three operating systems, the blanket Windows/Linux limitation was removed from the README, User Guide, and Developer Guide. The documentation still distinguishes automated cross-platform verification from optional human GUI evidence.
 
 ## Problems and limitations
 

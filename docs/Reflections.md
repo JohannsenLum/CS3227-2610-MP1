@@ -53,7 +53,7 @@ The MVP prompt required malformed-data preservation, atomic saving, and an hones
 - What did the AI get wrong, or what did later 3D/release work require correcting?
 - What engineering judgment was still needed despite the detailed master prompt?
 - How did the prompting evolve after persistence or graph verification findings?
-- Which verification remains your responsibility on Windows and Linux?
+- What manual UI evidence would still complement the successful Windows/Linux CI builds?
 
 ## Overall reflection — complete personally
 

@@ -122,7 +122,6 @@ CI executes Checkstyle and the complete automated test suite before uploading ea
 - The settled My Sky layout is recalculated rather than manually arranged; there is no manual node-position editing or undo.
 - Camera position and selection are intentionally not saved between launches.
 - The bundled JAR is platform-specific because JavaFX contains native libraries.
-- Windows and Linux GUI execution still require manual verification even when their CI build/test jobs pass.
 
 ## Manual test checklist
 

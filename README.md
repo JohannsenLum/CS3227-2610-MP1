@@ -71,7 +71,7 @@ Run it with:
 java --enable-native-access=ALL-UNNAMED -jar release/Constella-macos-arm64.jar
 ```
 
-The macOS ARM64 artifact is not a universal Windows or Linux JAR. Matching artifacts must be built and verified on those platforms.
+The macOS ARM64 artifact is not a universal Windows or Linux JAR. Use the matching platform artifact produced by GitHub Actions instead.
 
 GitHub Actions also uploads separately built `Constella-Linux`, `Constella-Windows`, and `Constella-macOS` workflow artifacts. Open a successful **Gradle CI** run on GitHub and download the artifact for the target operating system. These builds verify compilation, Checkstyle, and automated tests on each hosted runner; they do not replace manual GUI testing on a real desktop.
 
@@ -99,7 +99,7 @@ release/           Latest platform-specific bundled JAR
 ## Platform status
 
 - macOS ARM64: local build, tests, Checkstyle, and direct JAR launch verified
-- Windows: GitHub Actions build/test configured; GUI launch still requires manual verification
-- Linux: GitHub Actions build/test configured; GUI launch still requires manual verification
+- Windows: GitHub Actions build, Checkstyle, tests, and platform JAR verified
+- Linux: GitHub Actions build, Checkstyle, tests, and platform JAR verified
 
 The product contains only fictional demo content. No personal journal data, credentials, analytics, or network services are included in the repository.

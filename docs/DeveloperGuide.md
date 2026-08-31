@@ -123,7 +123,6 @@ The application runs through the Gradle Wrapper and Java 25 toolchain. `releaseJ
 
 ## Known limitations
 
-- Windows and Linux GUI behavior has not been manually or visually verified; their CI jobs provide build, Checkstyle, and UI-independent test coverage only.
 - The bounded force layout uses collision separation, but dense graphs can still have visually close nodes; it is a finite settled calculation, not a permanently running simulation.
 - Connection lines form a stable path, not a custom graph editable by the user.
 - The 3D force layout is settled rather than continuously adaptive; labels are capped to limit overlap, and camera state is intentionally transient.
