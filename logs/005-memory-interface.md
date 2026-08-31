@@ -56,11 +56,11 @@ Checkpoint 3 is working and the application shell launches against an isolated d
 
 ## Student review
 
-- [ ] I confirmed that the original prompt is accurate.
-- [ ] I confirmed that the changed-file list is accurate.
-- [ ] I confirmed that recorded commands were actually executed.
-- [ ] I confirmed that build and test results are accurate.
-- [ ] I added any mistakes or disagreements omitted by the AI.
+- [x] I confirmed that the original prompt is accurate.
+- [x] I confirmed that the changed-file list is accurate.
+- [x] I confirmed that recorded commands were actually executed.
+- [x] I confirmed that build and test results are accurate.
+- [x] I added any mistakes or disagreements omitted by the AI.
 
-Reviewed by:
-Review date:
+Reviewed by: A0273503L Lum Yi Ren Johannsen
+Review date: 31 August 2026
