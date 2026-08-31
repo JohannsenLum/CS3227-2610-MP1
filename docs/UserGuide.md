@@ -21,9 +21,9 @@ Choose **Clear Journal** at the bottom of the sidebar when you are ready to ente
 
 ## Memories
 
-Choose **New Memory** or press Command/Ctrl+N. Enter a title and date, select a mood and importance from 1 to 5, then optionally add a description, comma-separated tags, comma-separated people, location, and constellation assignments. The constellation picker shows seven rows with checkboxes. Click anywhere across a constellation row—not only its checkbox—to toggle membership, or focus the row and press Space/Enter. Use **Search constellations** above it for case-insensitive name matching; checked memberships remain selected even when filtering hides them. Choose **Create** to save.
+Choose **New Memory** or press Command/Ctrl+N. Enter a title and date, select a mood and importance from 1 to 5, then optionally add a description, comma-separated tags, comma-separated people, location, and constellation assignments. The constellation picker is sized to show up to seven checkbox rows without scrolling; the demo journal provides five constellations. Click anywhere across a constellation row—not only its checkbox—to toggle membership, or focus the row and press Space/Enter. Use **Search constellations** above it for case-insensitive name matching; checked memberships remain selected even when filtering hides them. Choose **Create** to save.
 
-![The New Memory dialog with title, date, mood, importance, description, tags, people, location and the seven-row constellation picker](images/new-memory.png)
+![The New Memory dialog with title, date, mood, importance, description, tags, people, location and a constellation picker sized for up to seven rows](images/new-memory.png)
 *The New Memory editor, including the searchable constellation picker.*
 
 Titles are trimmed and must not be blank. Tags are normalized to lowercase and deduplicated. People names are whitespace-normalized and deduplicated case-insensitively. Blank descriptions and locations are stored as absent. Missing dates or moods, importance outside 1–5, and blank comma-separated tag or person entries are rejected with a readable validation message while the editor remains open.
@@ -147,7 +147,7 @@ Use a disposable data path for testing where possible, for example set `CONSTELL
 - [ ] After clearing the demo, confirm the empty My Sky guidance.
 - [ ] Create three memories using different moods and importance values; verify star colour, size, tooltip, and details.
 - [ ] Open New Memory at the minimum supported window size and confirm every field label is fully visible.
-- [ ] Search the seven-row constellation checklist, select results across different searches, and confirm all checked memberships save.
+- [ ] Search the constellation checklist, select results across different searches, and confirm all checked memberships save; with enough constellations, verify that up to seven rows appear before scrolling is required.
 - [ ] Try a blank title and a trailing blank tag/person entry; verify readable validation without closing the editor.
 - [ ] Edit one memory and verify its UUID-backed star remains present with updated details.
 - [ ] Create and rename a constellation; assign multiple memories and confirm lines appear in My Sky.
