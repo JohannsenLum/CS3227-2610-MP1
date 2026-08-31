@@ -62,6 +62,7 @@ The documentation was audited against `MP1-spec.md`, `AGENTS.md`, the current Ja
 - `release/Constella-macos-arm64.jar` was rebuilt at 9,276,922 bytes. SHA-256: `333372225021e47188bdad2021ea9cefb8c913ed9c45e0ef36f5138caa95fcea`.
 - `unzip -t` reported no compressed-data errors.
 - The updated workflow was prepared for remote validation with Linux, Windows, and macOS jobs; final job results were intentionally not claimed before the push.
+- The first matrix run completed successfully on Linux, Windows, and macOS and uploaded all three artifacts. GitHub reported Node.js/action deprecation annotations for the earlier v4 action majors, so the workflow was updated to the current checkout v7, Gradle Actions v6, setup-java v6, and upload-artifact v7 major releases for a follow-up run.
 
 ## Problems and limitations
 
