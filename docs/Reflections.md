@@ -42,14 +42,14 @@ The second prompt forced explicit immutability, normalization, and equality deci
 
 ### Factual evidence
 
-The MVP prompt required malformed-data preservation, atomic saving, and an honest cross-platform release. Persistence tests covered missing/malformed files, Unicode, round trips, stale references, and temporary replacement. The initial release task produced a platform-labelled macOS ARM64 JAR that launched directly; final hardening later added separately labelled Windows x86-64 and Linux x86-64 CI builds without claiming that any one JAR is universal. See `logs/004-json-persistence.md`, `logs/008-release-preparation.md`, and `logs/014-cross-platform-release-artifacts.md`.
+The MVP prompt required malformed-data preservation, atomic saving, and an honest cross-platform release. Persistence tests covered missing/malformed files, Unicode, round trips, stale references, and temporary replacement. Release work first produced platform-labelled files, then the submission interpretation was revisited and the build was changed to produce one `Constella.jar` containing native libraries for the three tested OS/architecture targets. See `logs/004-json-persistence.md`, `logs/008-release-preparation.md`, `logs/014-cross-platform-release-artifacts.md`, and `logs/015-single-cross-platform-jar.md`.
 
 ### Student reflection — complete personally
 
 - How did the data-safety requirements change the persistence design?
-- Why was the original prompt formulated to insist on malformed-data preservation and a platform-labelled release?
+- Why was the original prompt formulated to insist on malformed-data preservation and honest release claims?
 - Which assumptions did the AI make about atomic replacement, data safety, or cross-platform packaging?
-- Why is a platform-labelled artifact more honest than a claimed universal JavaFX JAR?
+- How did checking the exact specification change the packaging decision from platform-labelled files to one carefully scoped cross-platform JAR?
 - What did the AI get wrong, or what did later 3D/release work require correcting?
 - What engineering judgment was still needed despite the detailed master prompt?
 - How did the prompting evolve after persistence or graph verification findings?

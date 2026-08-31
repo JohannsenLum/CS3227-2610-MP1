@@ -96,7 +96,7 @@ The working process for each increment was:
 6. Update user and developer documentation to match the verified release.
 7. Record failures and corrections in the corresponding interaction log.
 
-The `master` branch is the submission branch. GitHub Actions uses a Linux/Windows/macOS matrix on pushes, pull requests, and manual runs. Every Java 25 job validates the Gradle Wrapper, runs `./gradlew clean check releaseJar --no-daemon`, and uploads its platform-specific JAR as a seven-day workflow artifact. The workflow has read-only repository permissions and does not deploy or create a GitHub Release. Checkstyle and JUnit form the automated quality gate; the matrix verifies platform compilation and UI-independent behavior, while the User Guide retains the manual GUI checks that headless hosted runners cannot perform.
+The `master` branch is the submission branch. GitHub Actions uses a Linux/Windows/macOS matrix on pushes, pull requests, and manual runs. Every Java 25 job validates the Gradle Wrapper, runs `./gradlew clean check releaseJar --no-daemon`, and uploads the single bundled `Constella.jar` as a seven-day workflow artifact. The workflow has read-only repository permissions and does not deploy or create a GitHub Release. Checkstyle and JUnit form the automated quality gate; the matrix verifies platform compilation and UI-independent behavior, while the User Guide retains the manual GUI checks that headless hosted runners cannot perform.
 
 ## Build and test
 
@@ -119,7 +119,7 @@ Domain boundaries throw specific validation errors with field-oriented messages.
 
 ## Build and packaging
 
-The application runs through the Gradle Wrapper and Java 25 toolchain. `releaseJar` expands the runtime classpath into a single platform-labelled JAR and uses the plain `constella.Launcher` entry point. This bundles JavaFX native libraries for the build machine only. The repository includes macOS ARM64, Windows x86-64, and Linux x86-64 artifacts; CI built the Windows and Linux files from the same commit, while the macOS artifact was built and launched locally. Gradle's standard `clean` task leaves the checked-in `release/` directory intact, and `releaseJar` replaces only the current platform's file. The CI upload step uses an operating-system-specific filename pattern so each workflow artifact contains only its matching JAR. The fat JAR currently emits JavaFX's warning about classes loaded from the unnamed module but launched successfully on macOS ARM64. CI success proves compilation and automated behavior on its runner, not interactive rendering on an end-user desktop.
+The application runs through the Gradle Wrapper and Java 25 toolchain. `releaseJar` expands the runtime classpath into `Constella.jar` and uses the plain `constella.Launcher` entry point. Three isolated Gradle configurations add the JavaFX native artifacts for Windows x86-64, Linux x86-64, and Apple Silicon macOS without variant conflicts. Reproducible file ordering and normalized timestamps keep the output stable across build hosts. Gradle's standard `clean` task leaves the checked-in `release/` directory intact, and `releaseJar` replaces the single release file. The fat JAR currently emits JavaFX's warning about classes loaded from the unnamed module but launched successfully on Apple Silicon macOS. CI success proves compilation and automated behavior on its runners, not interactive rendering on an end-user desktop.
 
 ## Known limitations
 

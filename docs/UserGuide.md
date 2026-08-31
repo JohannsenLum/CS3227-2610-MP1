@@ -91,21 +91,17 @@ gradlew.bat run
 
 `check` runs the JUnit 5 suite and Checkstyle before launch. The Gradle Wrapper can provision the requested Java 25 toolchain on a connected development machine.
 
-The repository includes a bundled release for each supported platform. With JDK 25, run the matching file:
+The repository includes one bundled release for the three supported platforms. With JDK 25, run:
 
 ```sh
-# macOS Apple Silicon
-java --enable-native-access=ALL-UNNAMED -jar release/Constella-macos-arm64.jar
-
-# Linux x86-64
-java --enable-native-access=ALL-UNNAMED -jar release/Constella-linux-x86_64.jar
+java --enable-native-access=ALL-UNNAMED -jar release/Constella.jar
 ```
 
 ```bat
-java --enable-native-access=ALL-UNNAMED -jar release\Constella-windows-x86_64.jar
+java --enable-native-access=ALL-UNNAMED -jar release\Constella.jar
 ```
 
-The JARs are not interchangeable because JavaFX native libraries are platform-specific. `release/SHA256SUMS.txt` records their checksums. The macOS artifact was directly launched locally; the Windows and Linux artifacts passed the complete GitHub Actions build, test, and Checkstyle jobs and were archive-verified after download. Perform the manual GUI checklist on the target desktop before treating either CI-built artifact as interactively verified.
+`release/Constella.jar` bundles the JavaFX natives for Windows x86-64, Linux x86-64, and Apple Silicon macOS; `release/SHA256SUMS.txt` records its checksum. It was directly launched on Apple Silicon macOS. Windows and Linux pass the complete GitHub Actions build, test, and Checkstyle jobs, but still require the manual GUI checklist on their target desktops.
 
 To build the current platform's bundled JAR:
 
@@ -121,7 +117,7 @@ The repository's **Gradle CI** workflow builds on hosted Linux, Windows, and mac
 2. Open the successful **Gradle CI** run for the intended commit.
 3. Find **Artifacts** on the run summary.
 4. Download `Constella-Linux`, `Constella-Windows`, or `Constella-macOS`.
-5. Extract the downloaded ZIP before running the contained platform-labelled JAR with JDK 25.
+5. Extract the downloaded ZIP before running the contained `Constella.jar` with JDK 25.
 
 CI executes Checkstyle and the complete automated test suite before uploading each artifact. Hosted runners do not visually interact with the JavaFX interface, so perform the manual checklist on the target operating system before treating that build as runtime-verified.
 
@@ -129,7 +125,7 @@ CI executes Checkstyle and the complete automated test suite before uploading ea
 
 - The settled My Sky layout is recalculated rather than manually arranged; there is no manual node-position editing or undo.
 - Camera position and selection are intentionally not saved between launches.
-- The bundled JAR is platform-specific because JavaFX contains native libraries.
+- The bundled JAR covers Windows and Linux on x86-64 and macOS on Apple Silicon; other CPU architectures are not packaged.
 
 ## Manual test checklist
 

@@ -51,39 +51,31 @@ gradlew.bat run
 
 ## Release artifact
 
-Build a platform-specific fat JAR on the target operating system:
+Build the bundled release JAR:
 
 ```sh
 ./gradlew releaseJar
 ```
 
-The task writes `Constella-<platform>-<architecture>.jar` under `release/` with Constella, Gson, JavaFX classes, and the current platform's JavaFX native libraries bundled.
-
-The repository contains platform-labelled artifacts for the three supported desktop platforms:
+The task writes one `Constella.jar` under `release/` with Constella, Gson, JavaFX classes, and the JavaFX native libraries required by Windows x86-64, Linux x86-64, and Apple Silicon macOS.
 
 ```text
-release/Constella-macos-arm64.jar
-release/Constella-linux-x86_64.jar
-release/Constella-windows-x86_64.jar
+release/Constella.jar
 ```
 
-Run the artifact matching the operating system:
+Run the same artifact on each supported operating system with JDK 25:
 
 ```sh
-# macOS Apple Silicon
-java --enable-native-access=ALL-UNNAMED -jar release/Constella-macos-arm64.jar
-
-# Linux x86-64
-java --enable-native-access=ALL-UNNAMED -jar release/Constella-linux-x86_64.jar
+java --enable-native-access=ALL-UNNAMED -jar release/Constella.jar
 ```
 
 ```bat
-java --enable-native-access=ALL-UNNAMED -jar release\Constella-windows-x86_64.jar
+java --enable-native-access=ALL-UNNAMED -jar release\Constella.jar
 ```
 
-Each JAR is platform-specific because it bundles JavaFX native libraries. The macOS artifact was built and launched locally; the Windows and Linux artifacts were built by the successful GitHub Actions matrix and archive-verified after download. Interactive GUI testing is still required on each target desktop.
+The submitted JAR was directly launched on Apple Silicon macOS. GitHub Actions builds the same release definition and runs compilation, Checkstyle, and automated tests on Windows, Linux, and macOS. Interactive GUI testing is still required on Windows and Linux.
 
-GitHub Actions also uploads separately built `Constella-Linux`, `Constella-Windows`, and `Constella-macOS` workflow artifacts. Open a successful **Gradle CI** run on GitHub and download the artifact for the target operating system. These builds verify compilation, Checkstyle, and automated tests on each hosted runner; they do not replace manual GUI testing on a real desktop.
+GitHub Actions also uploads `Constella.jar` from each matrix runner as `Constella-Linux`, `Constella-Windows`, and `Constella-macOS` workflow artifacts for reproducibility checks. These automated jobs do not replace manual GUI testing on a real desktop.
 
 ## Project structure
 
@@ -97,7 +89,7 @@ src/main/java/constella/
 src/test/java/     JUnit 5 tests
 docs/              User Guide, Developer Guide, and AI-assisted SE reflections
 logs/              Verified summaries of AI-assisted development interactions
-release/           Latest platform-specific bundled JARs and checksums
+release/           Single latest bundled JAR and checksum
 ```
 
 ## Documentation

@@ -27,6 +27,12 @@ application {
     applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics']
 }
 
+configurations {
+    universalJavafxLinux
+    universalJavafxWindows
+    universalJavafxMac
+}
+
 checkstyle {
     toolVersion = '14.0.0'
     configFile = file('config/checkstyle/checkstyle.xml')
@@ -39,17 +45,15 @@ tasks.withType(Checkstyle).configureEach {
     }
 }
 
-def releaseOsName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
-def releasePlatform = releaseOsName.contains('mac') ? 'macos' : (releaseOsName.contains('win') ? 'windows' : 'linux')
-def releaseArchitecture = System.getProperty('os.arch').replace('amd64', 'x86_64').replace('aarch64', 'arm64')
-
 tasks.register('releaseJar', Jar) {
     group = 'distribution'
-    description = 'Builds a platform-specific JAR with runtime libraries and JavaFX natives bundled.'
+    description = 'Builds one JAR with Windows, Linux, and Apple Silicon macOS JavaFX natives bundled.'
     dependsOn classes
-    archiveFileName = "Constella-${releasePlatform}-${releaseArchitecture}.jar"
+    archiveFileName = 'Constella.jar'
     destinationDirectory = layout.projectDirectory.dir('release')
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
     manifest {
         attributes 'Main-Class': 'constella.Launcher'
     }
@@ -57,11 +61,25 @@ tasks.register('releaseJar', Jar) {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    [configurations.universalJavafxLinux,
+     configurations.universalJavafxWindows,
+     configurations.universalJavafxMac].each { platformConfiguration ->
+        from {
+            platformConfiguration.collect { zipTree(it) }
+        }
+    }
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
 }
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.14.0'
+    [universalJavafxLinux: 'linux',
+     universalJavafxWindows: 'win',
+     universalJavafxMac: 'mac-aarch64'].each { configurationName, platform ->
+        add(configurationName, "org.openjfx:javafx-base:25.0.2:${platform}") { transitive = false }
+        add(configurationName, "org.openjfx:javafx-graphics:25.0.2:${platform}") { transitive = false }
+        add(configurationName, "org.openjfx:javafx-controls:25.0.2:${platform}") { transitive = false }
+    }
     testImplementation platform('org.junit:junit-bom:5.14.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
