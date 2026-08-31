@@ -34,6 +34,7 @@ Changed `releaseJar` to create one reproducible `Constella.jar`, added isolated 
 ## Files changed
 
 - `build.gradle`
+- `.gitattributes`
 - `.github/workflows/gradle.yml`
 - `README.md`
 - `docs/UserGuide.md`
@@ -73,7 +74,7 @@ Changed `releaseJar` to create one reproducible `Constella.jar`, added isolated 
 
 ## Changes made after verification
 
-The dependency configuration was redesigned twice in response to actual Gradle variant-resolution failures. After the first push, all three CI jobs passed, but downloading their artifacts revealed different hashes because the host-selected runtime artifact was expanded before the fixed universal set. The packaging order was corrected so Linux, Windows, and macOS configurations are always expanded in a fixed order before the host runtime classpath. Documentation was scoped to the exact operating-system and architecture coverage rather than calling the artifact universally portable without qualification.
+The dependency configuration was redesigned twice in response to actual Gradle variant-resolution failures. After the first push, all three CI jobs passed, but downloading their artifacts revealed different hashes because the host-selected runtime artifact was expanded before the fixed universal set. The packaging order was corrected so Linux, Windows, and macOS configurations are always expanded in a fixed order before the host runtime classpath. A second comparison isolated the remaining Windows difference to Git's CRLF conversion of the bundled CSS, so `.gitattributes` now fixes release inputs to LF while retaining CRLF for the Windows launcher. Documentation was scoped to the exact operating-system and architecture coverage rather than calling the artifact universally portable without qualification.
 
 ## Outcome
 
