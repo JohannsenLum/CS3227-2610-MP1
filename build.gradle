@@ -58,15 +58,15 @@ tasks.register('releaseJar', Jar) {
         attributes 'Main-Class': 'constella.Launcher'
     }
     from sourceSets.main.output
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
     [configurations.universalJavafxLinux,
      configurations.universalJavafxWindows,
      configurations.universalJavafxMac].each { platformConfiguration ->
         from {
             platformConfiguration.collect { zipTree(it) }
         }
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
 }
