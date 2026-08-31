@@ -1,5 +1,8 @@
 # Constella User Guide
 
+![Constella's My Sky view showing the seeded demo journal as 24 mood-coloured spheres connected by constellation edges](images/my-sky.png)
+*My Sky on first launch, showing the 24-memory demo journal.*
+
 ## About Constella
 
 Constella is an offline desktop journal where you can create, inspect, edit, and delete memories. Memories are saved locally between launches, appear as spheres in the 3D **My Sky** graph, and remain available through search, filters, constellations, and a chronological timeline.
@@ -20,6 +23,9 @@ Choose **Clear Journal** at the bottom of the sidebar when you are ready to ente
 
 Choose **New Memory** or press Command/Ctrl+N. Enter a title and date, select a mood and importance from 1 to 5, then optionally add a description, comma-separated tags, comma-separated people, location, and constellation assignments. The constellation picker shows seven rows with checkboxes. Click anywhere across a constellation row—not only its checkbox—to toggle membership, or focus the row and press Space/Enter. Use **Search constellations** above it for case-insensitive name matching; checked memberships remain selected even when filtering hides them. Choose **Create** to save.
 
+![The New Memory dialog with title, date, mood, importance, description, tags, people, location and the seven-row constellation picker](images/new-memory.png)
+*The New Memory editor, including the searchable constellation picker.*
+
 Titles are trimmed and must not be blank. Tags are normalized to lowercase and deduplicated. People names are whitespace-normalized and deduplicated case-insensitively. Blank descriptions and locations are stored as absent. Missing dates or moods, importance outside 1–5, and blank comma-separated tag or person entries are rejected with a readable validation message while the editor remains open.
 
 Select a memory in **My Sky** to see its details. Use **Edit** to update it or **Delete** and confirm to remove it. Deleting also removes its constellation memberships.
@@ -29,6 +35,9 @@ Select a memory in **My Sky** to see its details. Use **Edit** to update it or *
 Constella opens directly in the genuine JavaFX 3D **My Sky** memory graph. There is no separate 2D sky or duplicate 3D Space navigation item. **My Sky contains one node per visible memory. Edges are the sparse chronological memory connections contributed by constellations.** It never creates nodes for constellations, tags, people, locations, moods, or other metadata. Every line joins two real visible memories and exactly matches an edge emitted by the application graph builder.
 
 The graph calculates a deterministic, bounded force-directed layout once after content or filters change, then briefly settles into place. Existing edges attract related memories into organic clusters; memory repulsion, collision separation, weak centring/component forces, and genuine Z depth keep disconnected memories visible without running a permanent simulation. The complete seeded demo displays exactly 24 coloured sphere nodes, including three without constellation connections. A sphere's colour represents its mood. Connection colours identify their contributing constellations; a line shared by multiple constellations uses a consistent blended colour.
+
+![A selected sphere in My Sky with its details panel open and unrelated spheres dimmed](images/my-sky-selected.png)
+*Selecting a memory dims unrelated spheres and keeps only its directly attached edges.*
 
 The surrounding deep starfield twinkles gently, memory spheres pulse at different deterministic phases, and small coloured lights travel along real connection paths. Choosing a constellation restricts these light trails to that related graph, making the selected cluster read like a constellation within the larger memory galaxy. This is presentation-only motion: memory positions remain settled and no animation is saved.
 
@@ -54,6 +63,9 @@ The controls above My Sky and Timeline share the current search and filter state
 ## Timeline
 
 Open **Timeline** to see filtered memories newest first on a central chronological axis. Compact memory cards alternate left and right under visible year markers; each card shows its date, title, and a short summary. Select a card to open its details. An empty journal and a filter with no matches display different guidance.
+
+![The Timeline view with memory cards alternating either side of a central chronological axis under year markers](images/timeline.png)
+*Timeline, showing filtered memories newest first.*
 
 ## Constellations
 
