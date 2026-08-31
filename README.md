@@ -59,19 +59,29 @@ Build a platform-specific fat JAR on the target operating system:
 
 The task writes `Constella-<platform>-<architecture>.jar` under `release/` with Constella, Gson, JavaFX classes, and the current platform's JavaFX native libraries bundled.
 
-The repository currently contains the verified Apple Silicon artifact:
+The repository contains platform-labelled artifacts for the three supported desktop platforms:
 
 ```text
 release/Constella-macos-arm64.jar
+release/Constella-linux-x86_64.jar
+release/Constella-windows-x86_64.jar
 ```
 
-Run it with:
+Run the artifact matching the operating system:
 
 ```sh
+# macOS Apple Silicon
 java --enable-native-access=ALL-UNNAMED -jar release/Constella-macos-arm64.jar
+
+# Linux x86-64
+java --enable-native-access=ALL-UNNAMED -jar release/Constella-linux-x86_64.jar
 ```
 
-The macOS ARM64 artifact is not a universal Windows or Linux JAR. Use the matching platform artifact produced by GitHub Actions instead.
+```bat
+java --enable-native-access=ALL-UNNAMED -jar release\Constella-windows-x86_64.jar
+```
+
+Each JAR is platform-specific because it bundles JavaFX native libraries. The macOS artifact was built and launched locally; the Windows and Linux artifacts were built by the successful GitHub Actions matrix and archive-verified after download. Interactive GUI testing is still required on each target desktop.
 
 GitHub Actions also uploads separately built `Constella-Linux`, `Constella-Windows`, and `Constella-macOS` workflow artifacts. Open a successful **Gradle CI** run on GitHub and download the artifact for the target operating system. These builds verify compilation, Checkstyle, and automated tests on each hosted runner; they do not replace manual GUI testing on a real desktop.
 
@@ -87,7 +97,7 @@ src/main/java/constella/
 src/test/java/     JUnit 5 tests
 docs/              User Guide, Developer Guide, and AI-assisted SE reflections
 logs/              Verified summaries of AI-assisted development interactions
-release/           Latest platform-specific bundled JAR
+release/           Latest platform-specific bundled JARs and checksums
 ```
 
 ## Documentation

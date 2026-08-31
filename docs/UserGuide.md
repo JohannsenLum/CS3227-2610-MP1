@@ -91,13 +91,21 @@ gradlew.bat run
 
 `check` runs the JUnit 5 suite and Checkstyle before launch. The Gradle Wrapper can provision the requested Java 25 toolchain on a connected development machine.
 
-The verified bundled release is `release/Constella-macos-arm64.jar`. With JDK 25 on an Apple Silicon Mac, run:
+The repository includes a bundled release for each supported platform. With JDK 25, run the matching file:
 
 ```sh
+# macOS Apple Silicon
 java --enable-native-access=ALL-UNNAMED -jar release/Constella-macos-arm64.jar
+
+# Linux x86-64
+java --enable-native-access=ALL-UNNAMED -jar release/Constella-linux-x86_64.jar
 ```
 
-Windows and Linux users must build and use the matching platform-labelled artifact because JavaFX native libraries are platform-specific.
+```bat
+java --enable-native-access=ALL-UNNAMED -jar release\Constella-windows-x86_64.jar
+```
+
+The JARs are not interchangeable because JavaFX native libraries are platform-specific. `release/SHA256SUMS.txt` records their checksums. The macOS artifact was directly launched locally; the Windows and Linux artifacts passed the complete GitHub Actions build, test, and Checkstyle jobs and were archive-verified after download. Perform the manual GUI checklist on the target desktop before treating either CI-built artifact as interactively verified.
 
 To build the current platform's bundled JAR:
 
@@ -105,7 +113,7 @@ To build the current platform's bundled JAR:
 ./gradlew releaseJar
 ```
 
-### Downloading CI-built platform JARs
+### Downloading fresh CI-built platform JARs
 
 The repository's **Gradle CI** workflow builds on hosted Linux, Windows, and macOS runners. After a successful workflow run:
 

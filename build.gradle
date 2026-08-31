@@ -60,10 +60,6 @@ tasks.register('releaseJar', Jar) {
     exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
 }
 
-tasks.named('clean') {
-    delete layout.projectDirectory.dir('release')
-}
-
 dependencies {
     implementation 'com.google.code.gson:gson:2.14.0'
     testImplementation platform('org.junit:junit-bom:5.14.3')

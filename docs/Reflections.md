@@ -42,7 +42,7 @@ The second prompt forced explicit immutability, normalization, and equality deci
 
 ### Factual evidence
 
-The MVP prompt required malformed-data preservation, atomic saving, and an honest cross-platform release. Persistence tests covered missing/malformed files, Unicode, round trips, stale references, and temporary replacement. The release task produced an 8.8 MB macOS ARM64 JAR that launched directly, while documentation explicitly avoids calling it universal. See `logs/004-json-persistence.md` and `logs/008-release-preparation.md`.
+The MVP prompt required malformed-data preservation, atomic saving, and an honest cross-platform release. Persistence tests covered missing/malformed files, Unicode, round trips, stale references, and temporary replacement. The initial release task produced a platform-labelled macOS ARM64 JAR that launched directly; final hardening later added separately labelled Windows x86-64 and Linux x86-64 CI builds without claiming that any one JAR is universal. See `logs/004-json-persistence.md`, `logs/008-release-preparation.md`, and `logs/014-cross-platform-release-artifacts.md`.
 
 ### Student reflection — complete personally
 
