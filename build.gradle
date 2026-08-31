@@ -1,0 +1,80 @@
+plugins {
+    id 'application'
+    id 'checkstyle'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group = 'constella'
+version = '0.1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+javafx {
+    version = '25.0.2'
+    modules = ['javafx.controls']
+}
+
+application {
+    mainClass = 'constella.Launcher'
+    applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics']
+}
+
+checkstyle {
+    toolVersion = '14.0.0'
+    configFile = file('config/checkstyle/checkstyle.xml')
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+def releaseOsName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+def releasePlatform = releaseOsName.contains('mac') ? 'macos' : (releaseOsName.contains('win') ? 'windows' : 'linux')
+def releaseArchitecture = System.getProperty('os.arch').replace('amd64', 'x86_64').replace('aarch64', 'arm64')
+
+tasks.register('releaseJar', Jar) {
+    group = 'distribution'
+    description = 'Builds a platform-specific JAR with runtime libraries and JavaFX natives bundled.'
+    dependsOn classes
+    archiveFileName = "Constella-${releasePlatform}-${releaseArchitecture}.jar"
+    destinationDirectory = layout.projectDirectory.dir('release')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes 'Main-Class': 'constella.Launcher'
+    }
+    from sourceSets.main.output
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+}
+
+tasks.named('clean') {
+    delete layout.projectDirectory.dir('release')
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.14.0'
+    testImplementation platform('org.junit:junit-bom:5.14.3')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+}
